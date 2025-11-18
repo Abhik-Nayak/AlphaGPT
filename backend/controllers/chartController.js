@@ -16,7 +16,8 @@ export const chatWithAI = async (req, res) => {
     await Chat.create({ role: "user", content: message });
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      // model: "gpt-4o-mini",
+      model: "openai/gpt-oss-20b:free",
       messages: [{ role: "user", content: message }]
     });
 
