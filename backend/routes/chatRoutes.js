@@ -1,15 +1,13 @@
 import express from 'express';
-import { chatWithAI } from '../controllers/streamController.js';
-import { Chat } from '../models/Chat.js';
+// import { chatWithAI } from '../controllers/streamController.js';
+import { chatWithAI, getConversationMessages } from '../controllers/chatController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+router.use(authMiddleware);
+router.get("/:conversationId/messages", getConversationMessages);
+router.post("/:conversationId/message", chatWithAI); // streaming endpoint
 
-router.post("/chat", chatWithAI);
-
-router.get("/history", async (req, res) => {
-  const messages = await Chat.find().sort({ createdAt: 1 });
-  res.json(messages);
-});
 
 
 export default router;

@@ -1,0 +1,79 @@
+@use "../../styles/variables" as *;
+
+.auth {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__card {
+    background: #020617;
+    padding: 2.5rem 2.8rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.8);
+    max-width: 420px;
+    width: 100%;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+  }
+
+  &__subtitle {
+    margin: 0.3rem 0 1.6rem;
+    color: #9ca3af;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    label {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    input {
+      background: #020617;
+      border-radius: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      color: $text-main;
+      outline: none;
+      font-size: 0.9rem;
+
+      &:focus {
+        border-color: $accent;
+        box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
+      }
+    }
+  }
+
+  &__error {
+    color: #f97373;
+    font-size: 0.8rem;
+  }
+
+  &__submit {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__toggle {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}

@@ -1,0 +1,33 @@
+@use "../../styles/variables" as *;
+
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: $bg-chat;
+
+  &__main {
+    flex: 1;
+    display: flex;
+  }
+
+  &__empty {
+    margin: auto;
+    text-align: center;
+    max-width: 480px;
+
+    h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+  }
+
+  &__loading {
+    margin: auto;
+    color: #9ca3af;
+  }
+}
