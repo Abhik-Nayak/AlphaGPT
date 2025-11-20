@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import type { ChatSummary, Message } from "../types";
-import { fetchChats, createChat, fetchMessages } from "../api/chat";
+import { fetchChats, createChat, fetchMessages, deleteChat as deleteChatApi } from "../api/chat";
 import { useAuth } from "../hooks/useAuth";
 
 type ChatContextType = {
@@ -14,6 +14,8 @@ type ChatContextType = {
     selectChat: (id: string) => void;
     newChat: () => Promise<void>;
     sendMessageStreaming: (content: string) => Promise<void>;
+    removeChat: (id: string) => void;
+    resetChat: () => void;
 };
 
 export const ChatContext = createContext<ChatContextType | undefined>(
@@ -70,6 +72,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
         })();
     }, [selectedChatId]);
 
+    useEffect(() => {
+        const handler = () => resetChat();
+
+        window.addEventListener("chat-reset", handler);
+        return () => window.removeEventListener("chat-reset", handler);
+    }, []);
+
+
     const selectChat = (id: string) => {
         setSelectedChatId(id);
     };
@@ -85,6 +95,29 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
             console.error("Error creating chat", err);
         }
     };
+
+    const removeChat = async (chatId: string) => {
+        try {
+            await deleteChatApi(chatId);
+
+            // Remove from state
+            setChats((prev) => prev.filter((chat) => chat._id !== chatId));
+
+            // If deleted chat is active → pick next one
+            if (selectedChatId === chatId) {
+                const remaining = chats.filter((c) => c._id !== chatId);
+                if (remaining.length > 0) {
+                    setSelectedChatId(remaining[0]._id);
+                } else {
+                    setSelectedChatId(null);
+                    setMessages([]);
+                }
+            }
+        } catch (error) {
+            console.error("Delete chat error:", error);
+        }
+    };
+
     const sendMessageStreaming = async (content: string) => {
         if (!selectedChatId || !token || streaming) return;
 
@@ -148,6 +181,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
+    const resetChat = () => {
+        setChats([]);
+        setSelectedChatId(null);
+        setMessages([]);
+        setLoadingChats(false);
+        setLoadingMessages(false);
+        setStreaming(false);
+        setTyping(false);
+    };
+
+
     return (
         <ChatContext.Provider
             value={{
@@ -161,6 +205,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
                 selectChat,
                 newChat,
                 sendMessageStreaming,
+                removeChat,
+                resetChat
             }}
         >
             {children}

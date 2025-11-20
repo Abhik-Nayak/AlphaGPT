@@ -14,74 +14,81 @@ export const chatWithAI = async (req, res) => {
     const { conversationId } = req.params;
     const { message } = req.body;
 
+    // load conversation
     const convo = await Conversation.findOne({
       _id: conversationId,
       user: req.user.id,
     });
-
-    if (!convo) {
+    if (!convo)
       return res.status(404).json({ error: "Conversation not found" });
-    }
 
-    // Save user message
-    const userMsg = await Chat.create({
+    // save user message
+    await Chat.create({
       conversation: conversationId,
       user: req.user.id,
       role: "user",
       content: message,
     });
 
-    // (Optional) auto-title conversation from first message
-    if (!convo.title || convo.title === "New chat") {
-      convo.title = message.slice(0, 40);
-    }
-    convo.lastMessageAt = new Date();
-    await convo.save();
+    // Step 1: get previous messages
+    const history = await Chat.find({
+      conversation: conversationId,
+      user: req.user.id,
+    })
+      .sort({ createdAt: 1 })
+      .lean();
 
-    // STREAMING SETUP (simplified)
-    res.setHeader("Content-Type", "text/event-stream");
+    // Step 2: format for OpenAI
+    const openAIMessages = history.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    // Step 3: Add the new message
+    openAIMessages.push({ role: "user", content: message });
+
+    // streaming headers
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Transfer-Encoding", "chunked");
     res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
 
+    // Step 4: CALL OpenAI with full conversation context
     const stream = await openai.chat.completions.create({
       model: "openai/gpt-oss-20b:free",
-      messages: [
-        // you can also pull previous Chat docs here if you want full context
-        { role: "user", content: message },
-      ],
+      // model: "openai/gpt-4o-mini",
+      messages: openAIMessages,
       stream: true,
     });
 
-    let fullReply = "";
+    let reply = "";
 
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content || "";
-      if (!delta) continue;
-      fullReply += delta;
-      // send chunk to client
+      reply += delta;
       res.write(delta);
     }
 
-    // Save assistant response
+    // save assistant reply
     await Chat.create({
       conversation: conversationId,
       user: req.user.id,
       role: "assistant",
-      content: fullReply,
+      content: reply,
     });
 
     convo.lastMessageAt = new Date();
     await convo.save();
 
     res.end();
-   } catch (error) {
-    console.error("AI Error:", error);
-    try {
-      res.write('data: [ERROR]\n\n');
-      res.end();
-    } catch (_) {}
+  } catch (err) {
+    console.error(err);
+    res.end("Error occurred");
   }
 };
+// If ChatGPT needs full conversation context every time,
+// how the hell does it handle millions of users, giant histories, and billions of tokens daily?
+// Isn't this insanely expensive and heavy?
+
 export const getConversationMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
