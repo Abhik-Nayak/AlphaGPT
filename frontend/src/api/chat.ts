@@ -6,6 +6,9 @@ export const fetchChats = () => api.get<ChatSummary[]>("/conversations");
 export const createChat = (data?: { title?: string }) =>
   api.post<ChatSummary>("/conversations", data);
 
+export const deleteChat = (chatId: string) =>
+  api.delete(`/conversations/${chatId}`);
+
 export const fetchMessages = (chatId: string) =>
   api.get<Message[]>(`/chats/${chatId}/messages`);
 
