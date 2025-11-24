@@ -128,7 +128,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
         try {
             const res = await fetch(
-                `http://localhost:5000/api/chats/${selectedChatId}/message`,
+                `http://localhost:5000/api/chats/${selectedChatId}/messages/stream`,
                 {
                     method: "POST",
                     headers: {

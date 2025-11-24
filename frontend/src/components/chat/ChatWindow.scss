@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   background: $bg-chat;
+  overflow: auto;
 
   &__main {
     flex: 1;

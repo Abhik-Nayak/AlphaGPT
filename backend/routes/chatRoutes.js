@@ -6,7 +6,7 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 const router = express.Router();
 router.use(authMiddleware);
 router.get("/:conversationId/messages", getConversationMessages);
-router.post("/:conversationId/message", chatWithAI); // streaming endpoint
+router.post("/:conversationId/messages/stream", chatWithAI); // streaming endpoint
 
 
 
