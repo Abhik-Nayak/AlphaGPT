@@ -11,6 +11,8 @@ const conversationSchema = new mongoose.Schema(
       type: String,
       default: "New chat",
     },
+    summary: { type: String, default: "" }, // long-term memory
+    memoryUpdatedAt: { type: Date },
     lastMessageAt: {
       type: Date,
       default: Date.now,

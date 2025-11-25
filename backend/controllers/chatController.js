@@ -37,6 +37,7 @@ export const chatWithAI = async (req, res) => {
     })
       .sort({ createdAt: 1 })
       .lean();
+    console.log("history", history);
 
     // Step 2: format for OpenAI
     const openAIMessages = history.map((m) => ({
@@ -76,6 +77,10 @@ export const chatWithAI = async (req, res) => {
       content: reply,
     });
 
+    // save conversation title and update last message time
+    convo.title = history[0]
+      ? history[0].content.slice(0, 15)
+      : message.slice(0, 15);
     convo.lastMessageAt = new Date();
     await convo.save();
 
@@ -89,6 +94,7 @@ export const chatWithAI = async (req, res) => {
 // how the hell does it handle millions of users, giant histories, and billions of tokens daily?
 // Isn't this insanely expensive and heavy?
 
+// get conversation/thread related chats for loggedin user what shows right sidebar of application , it gave conversation related chats 
 export const getConversationMessages = async (req, res) => {
   try {
     const { conversationId } = req.params;
