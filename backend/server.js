@@ -18,6 +18,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/conversations", conversationRoutes);
 
-app.listen(process.env.PORT, () =>
+/* ✅ TEST ROUTE */
+app.get("/test", (req, res) => {
+  res.status(200).json({ message: "API is working! 🎉" });
+});
+
+app.listen(process.env.PORT, "0.0.0.0", () =>
   console.log(`Server running on port ${process.env.PORT}`)
 );
+
