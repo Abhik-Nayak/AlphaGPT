@@ -5,6 +5,7 @@ import Spinner from "../ui/Spinner";
 import "./Sidebar.scss";
 import ConfirmDialog from "../common/ConfirmDialog";
 
+
 const TrashIcon = () => <span style={{ fontSize: "14px" }}>🗑️</span>;
 
 const Sidebar: React.FC = () => {
