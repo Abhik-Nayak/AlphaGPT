@@ -53,8 +53,9 @@ const MessageList: React.FC<Props> = ({ messages, typing }) => {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
+                // @ts-ignore
                 code({ inline, className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className || "");
+                  // const match = /language-(\w+)/.exec(className || "");
                   return !inline ? (
                     <pre className="messages__code">
                       <code className={className} {...props}>
