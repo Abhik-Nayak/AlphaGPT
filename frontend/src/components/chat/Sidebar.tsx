@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useChat } from "../../hooks/useChat";
 import { useAuth } from "../../hooks/useAuth";
 import Spinner from "../ui/Spinner";
-import "./Sidebar.scss";
+import "./SidebarStyle.scss";
 import ConfirmDialog from "../common/ConfirmDialog";
 
 
